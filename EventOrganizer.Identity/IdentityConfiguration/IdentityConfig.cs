@@ -16,19 +16,24 @@ namespace EventOrganizer.Identity.IdentityConfiguration
         public static IEnumerable<ApiScope> ApiScopes =>
             new List<ApiScope>
             {
-                new ApiScope("eventorganizerapi", "Event Organizer API", new[] { JwtClaimTypes.Id })
+                new ApiScope("eventorganizer_api", "Event Organizer API", new[] { JwtClaimTypes.Id }),
+                new ApiScope("scheduler_api", "Scheduler API", new[] { JwtClaimTypes.Id })
             };
 
         public static IEnumerable<ApiResource> ApiResources =>
             new List<ApiResource>
             {
-                new ApiResource("eventorganizerapi")
+                new ApiResource("eventorganizer_api")
                 {
-                    Scopes = { "eventorganizerapi" }
+                    Scopes = { "eventorganizer_api" }
+                },
+                new ApiResource("scheduler_api")
+                {
+                    Scopes = { "scheduler_api" }
                 }
             };
 
-        public static IEnumerable<Client> GetClients(string origin) =>
+        public static IEnumerable<Client> GetClients(string[] origin) =>
             new List<Client>
             {
                 // React client
@@ -36,7 +41,7 @@ namespace EventOrganizer.Identity.IdentityConfiguration
                 {
                     ClientId = "eventorganizer",
                     ClientName = "Event Organizer",
-                    ClientUri = origin,
+                    ClientUri = origin[0],
 
                     AllowedGrantTypes = GrantTypes.Implicit,
 
@@ -44,17 +49,39 @@ namespace EventOrganizer.Identity.IdentityConfiguration
 
                     RedirectUris =
                     {
-                        $"{origin}/signin-oidc",
+                        $"{origin[0]}/signin-oidc",
                     },
 
-                    PostLogoutRedirectUris = { $"{origin}/signout-oidc" },
-                    AllowedCorsOrigins = { origin },
+                    PostLogoutRedirectUris = { $"{origin[0]}/signout-oidc" },
+                    AllowedCorsOrigins = { origin[0] },
 
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "eventorganizerapi"
+                        "eventorganizer_api"
+                    },
+
+                    AllowAccessTokensViaBrowser = true
+                },
+                // Web Api client
+                new Client
+                {
+                    ClientId = "eventorganizer_api",
+                    ClientName = "Event Organizer API",
+                    ClientUri = origin[1],
+
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                    RequireClientSecret = false,
+
+                    AllowedCorsOrigins = { origin[1] },
+
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "scheduler_api"
                     },
 
                     AllowAccessTokensViaBrowser = true

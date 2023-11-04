@@ -8,13 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 var origins = new[]
 {
     builder.Configuration.GetValue<string>("AllowedOrigins:WebClient"),
-    builder.Configuration.GetValue<string>("AllowedOrigins:WebApi")
+    builder.Configuration.GetValue<string>("AllowedOrigins:WebApi"),
+    builder.Configuration.GetValue<string>("AllowedOrigins:SchedulerClient")
 };
 
 builder.Services.AddIdentityServer()
     .AddInMemoryIdentityResources(IdentityConfig.IdentityResources)
     .AddInMemoryApiScopes(IdentityConfig.ApiScopes)
-    .AddInMemoryClients(IdentityConfig.GetClients(origins.First()))
+    .AddInMemoryClients(IdentityConfig.GetClients(origins))
     .AddInMemoryApiResources(IdentityConfig.ApiResources)
     .AddTestUsers(TestUsers.Users)
     .AddDeveloperSigningCredential();
