@@ -12,7 +12,7 @@ jobs:
 
   build_docker:
     name: Build & Push Docker Image
-    needs: test
+    needs: build
     uses: event-organizer-project/event-organizer-infrastructure/.github/workflows/docker_build_push.yml@master
     with:
       dockerfile_path: ./EventOrganizer.Identity/Dockerfile
