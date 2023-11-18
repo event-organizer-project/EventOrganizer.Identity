@@ -2,8 +2,18 @@ using EventOrganizer.Identity.IdentityConfiguration;
 using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+    options.ConfigureHttpsDefaults(opt => 
+    {
+        opt.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
+        opt.ClientCertificateMode = ClientCertificateMode.AllowCertificate;
+        opt.ServerCertificate = new X509Certificate2("aspnetapp.pfx", "password");
+    }));
 
 var origins = new[]
 {
