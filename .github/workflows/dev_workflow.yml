@@ -12,9 +12,25 @@ jobs:
     name: Build
     uses: event-organizer-project/event-organizer-infrastructure/.github/workflows/dotnet_build.yml@master
 
+  certs:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install .NET SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Install self-signed certificate
+      run: dotnet dev-certs https -ep ${{ runner.temp }}/EventOrganizer.Identity/aspnetapp.pfx -p password
+
   build_docker:
     name: Build Docker Image
-    needs: build
+    needs: certs
     uses: event-organizer-project/event-organizer-infrastructure/.github/workflows/docker_build_push.yml@master
     with:
       dockerfile_path: ./EventOrganizer.Identity/Dockerfile
