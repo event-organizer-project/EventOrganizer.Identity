@@ -7,13 +7,16 @@ using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(options =>
-    options.ConfigureHttpsDefaults(opt => 
-    {
-        opt.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
-        opt.ClientCertificateMode = ClientCertificateMode.AllowCertificate;
-        opt.ServerCertificate = new X509Certificate2("aspnetapp.pfx", "password");
-    }));
+if (builder.Environment.IsDevelopment())
+{
+    builder.WebHost.ConfigureKestrel(options =>
+        options.ConfigureHttpsDefaults(opt =>
+        {
+            opt.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
+            opt.ClientCertificateMode = ClientCertificateMode.AllowCertificate;
+            opt.ServerCertificate = new X509Certificate2("aspnetapp.pfx", "password");
+        }));
+}
 
 var origins = new[]
 {
@@ -65,7 +68,7 @@ app.Use((context, next) =>
     return next(context);
 });
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseRouting();
